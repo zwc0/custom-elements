@@ -6,8 +6,8 @@ window.customElements.define('css-modal', class extends HTMLElement {
     shadow.innerHTML=`
     <style>
       /* The Modal (background) */
-      :host {
-        display: none; /* Hidden by default */
+      .holder {
+        display: block; /* Hidden by default */
         position: fixed; /* Stay in place */
         z-index: 1; /* Sit on top */
         padding-top: ${this.getAttribute('top')||'25px'}; /* Location of the box */
@@ -23,10 +23,12 @@ window.customElements.define('css-modal', class extends HTMLElement {
       }
       /* Modal Content */
       .modal-content {
-        position: relative;
+        z-index: 1;
+        position: absolute;
         background-color: #fefefe;
         margin: auto;
         width: ${this.getAttribute('width')||'80%'};
+        left: 10%;
       }
       /* The Close Button */
       .close {
@@ -48,6 +50,7 @@ window.customElements.define('css-modal', class extends HTMLElement {
       }
       .modal-body {padding: 2px 16px;}
     </style>
+    <div class="holder">
     <div class="modal-content">
       ${this.getAttribute('title')!='none'
       ?`
@@ -68,12 +71,61 @@ window.customElements.define('css-modal', class extends HTMLElement {
       </div>
       `:''}
     </div>
+    </div>
     `;
-    shadow.querySelector('.close').addEventListener('click',e=>self.close());
+    shadow.addEventListener('click',e=>{
+      if(e.target.classList.contains('holder') || e.target.classList.contains('close')){self.close()}
+    });
     this.addEventListener('click',e=>{
       if(e.target.dataset.modal == 'close') self.close();
     });
+
+    //Make the DIV element draggagle:
+    dragElement(shadow.querySelector('.modal-content'));
+
+    function dragElement(elmnt) {
+      var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      if (shadow.querySelector(".modal-header")) {
+        /* if present, the header is where you move the DIV from:*/
+        shadow.querySelector(".modal-header").onmousedown = dragMouseDown;
+      } else {
+        /* otherwise, move the DIV from anywhere inside the DIV:*/
+        elmnt.onmousedown = dragMouseDown;
+      }
+
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.onmouseup = closeDragElement;
+        // call a function whenever the cursor moves:
+        elmnt.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // set the element's new position:
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        /* stop moving when mouse button is released:*/
+        elmnt.onmouseup = null;
+        elmnt.onmousemove = null;
+      }
+
+      self.close();
+    }
   }
   close() {this.style.display = 'none'}
-  show() {this.style.display = 'block'}
+  show() {this.style.display = ''}
 });
