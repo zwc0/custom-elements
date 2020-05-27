@@ -79,12 +79,11 @@ window.customElements.define('css-modal', class extends HTMLElement {
 
     //Make the DIV element draggagle:
     dragElement(shadow.querySelector('.modal-content'));
-
     function dragElement(elmnt) {
       var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
       if (shadow.querySelector(".modal-header")) {
         /* if present, the header is where you move the DIV from:*/
-        shadow.querySelector(".modal-header").onmousedown = dragMouseDown;
+        elmnt.querySelector(".modal-header").onmousedown = dragMouseDown;
       } else {
         /* otherwise, move the DIV from anywhere inside the DIV:*/
         elmnt.onmousedown = dragMouseDown;
@@ -96,9 +95,9 @@ window.customElements.define('css-modal', class extends HTMLElement {
         // get the mouse cursor position at startup:
         pos3 = e.clientX;
         pos4 = e.clientY;
-        elmnt.onmouseup = closeDragElement;
+        self.onmouseup = closeDragElement;
         // call a function whenever the cursor moves:
-        elmnt.onmousemove = elementDrag;
+        self.onmousemove = elementDrag;
       }
 
       function elementDrag(e) {
@@ -116,8 +115,8 @@ window.customElements.define('css-modal', class extends HTMLElement {
 
       function closeDragElement() {
         /* stop moving when mouse button is released:*/
-        elmnt.onmouseup = null;
-        elmnt.onmousemove = null;
+        self.onmouseup = null;
+        self.onmousemove = null;
       }
 
       self.close();
