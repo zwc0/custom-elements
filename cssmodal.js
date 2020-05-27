@@ -50,13 +50,13 @@ window.customElements.define('css-modal', class extends HTMLElement {
       }
       .modal-body {padding: 2px 16px;}
     </style>
-    <div class="holder">
+    <div class="holder" ${self.hasAttribute('bgclose')?'data-modal="close"':''}>
     <div class="modal-content">
       ${this.getAttribute('title')!='none'
       ?`
       <div class="modal-header">
         <slot name="header">
-          <span class="close">&times;</span>
+          <span class="close" data-modal="close">&times;</span>
           <h2>${self.getAttribute('title')||''}</h2>
         </slot>
       </div>
@@ -74,10 +74,7 @@ window.customElements.define('css-modal', class extends HTMLElement {
     </div>
     `;
     shadow.addEventListener('click',e=>{
-      if(e.target.classList.contains('holder') || e.target.classList.contains('close')){self.close()}
-    });
-    this.addEventListener('click',e=>{
-      if(e.target.dataset.modal == 'close') self.close();
+      if(e.target.dataset.modal == 'close'){self.close()}
     });
 
     //Make the DIV element draggagle:
