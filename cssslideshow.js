@@ -3,6 +3,7 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     super();
     const self = this;
     const shadow = this.attachShadow({mode: 'open'});
+    const imgs = this.querySelectorAll('img');
     shadow.innerHTML=`
     <style>
       * {box-sizing: border-box}
@@ -63,8 +64,11 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
         position: absolute;
         top: 0;
       }
-      
-      /* The dots/bullets/indicators */
+      ${self.getAttribute('prop') == 'dots' ? '' : `
+      #dots {
+        display: none;
+      }
+      `}
       .dot {
         cursor: pointer;
         height: 15px;
@@ -103,47 +107,18 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
         .prev, .next,.text {font-size: 11px}
       }
     </style>
-    <div class="slideshow-container">
-    ${/*
-    <div class="mySlides fade">
-      <div class="numbertext">1 / 3</div>
-      <img src="https://clansstewart.org/pics/Appin1.gif">
-      <div class="text">Caption Text</div>
-    </div>
-    
-    <div class="mySlides fade">
-      <div class="numbertext">2 / 3</div>
-      <img src="https://clansstewart.org/pics/Atholl1.gif">
-      <div class="text">Caption Two</div>
-    </div>
-    
-    <div class="mySlides fade">
-      <div class="numbertext">3 / 3</div>
-      <img src="https://clansstewart.org/pics/Bute1.gif">
-      <div class="text">Caption Three</div>
-    </div>
-
-    <a class="prev">&#10094;</a>
-    <a class="next">&#10095;</a>
-    */
-    ''}
-    
-    </div>
+    <div class="slideshow-container"></div>
     <br>
-    
-    <div style="text-align:center">
-      <span class="dot"></span> 
-      <span class="dot"></span> 
-      <span class="dot"></span> 
+    <div id="dots" style="text-align:center">
+      ${`<span class="dot"></span>`.repeat(imgs.length)}
     </div>
     `;
 
-    let slides = this.querySelectorAll('img');
-    let divSlides = [...slides].map(e=>
+    let divSlides = [...imgs].map((e,i)=>
       `<div class="mySlides fade">
-        <div class="numbertext">1 / 3</div>
+        <div class="numbertext">${i + 1} / ${imgs.length}</div>
         <img src="${e.src}">
-        <div class="text">Caption Text</div>
+        <div class="text">${e.getAttribute('caption') || ''}</div>
       </div>`
     ).join('');
     divSlides += `
@@ -167,7 +142,7 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     shadow.addEventListener('click',e=>{
       if(e.target.classList.contains('prev')) plusSlides(-1);
       if(e.target.classList.contains('next')) plusSlides(1);
-      if(e.target.classList.contains('dot')) currentSlide(Array.from(e.target.parentNode.children).indexOf(e.target)+1)
+      if(e.target.parentElement.id == ('dots')) currentSlide(Array.from(e.target.parentNode.children).indexOf(e.target)+1)
     });
     
     function showSlides(n) {
