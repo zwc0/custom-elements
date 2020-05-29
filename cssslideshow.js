@@ -4,8 +4,17 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     const self = this;
     const shadow = this.attachShadow({mode: 'open'});
     const imgs = this.querySelectorAll('img');
+
+    let prop = (()=>{
+      if(self.getAttribute('prop') == 'thumbnail') return `
+      <div id="dots" style="display: grid; grid: auto / repeat(${imgs.length}, 1fr)">${this.innerHTML}</div>`;
+      return `
+      <div id="dots" style="text-align:center">${`<span></span>`.repeat(imgs.length)}</div>`;
+    })();
+
     shadow.innerHTML=`
     <style>
+    :host {display: block}
       * {box-sizing: border-box}
       body {font-family: Verdana, sans-serif; margin:0}
       .mySlides {display: none}
@@ -51,9 +60,10 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
         font-size: 15px;
         padding: 8px 12px;
         position: absolute;
-        bottom: 8px;
+        bottom: 0px;
         width: 100%;
         text-align: center;
+        ${self.getAttribute('caption') == 'solid' ? `background-color: black;` : ''}
       }
       
       /* Number text (1/3 etc) */
@@ -64,12 +74,12 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
         position: absolute;
         top: 0;
       }
-      ${self.getAttribute('prop') == 'dots' ? '' : `
+      ${self.hasAttribute('prop') ? '' : `
       #dots {
         display: none;
       }
       `}
-      .dot {
+      #dots>span {
         cursor: pointer;
         height: 15px;
         width: 15px;
@@ -79,8 +89,14 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
         display: inline-block;
         transition: background-color 0.6s ease;
       }
-      
-      .active, .dot:hover {
+      #dots>img {
+        cursor: pointer;
+        opacity: 0.6;
+      }
+      #dots>.active, #dots>img.demo:hover {
+        opacity: 1;
+      }
+      #dots>.active, #dots>span:hover {
         background-color: #717171;
       }
       
@@ -108,24 +124,22 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
       }
     </style>
     <div class="slideshow-container"></div>
-    <br>
-    <div id="dots" style="text-align:center">
-      ${`<span class="dot"></span>`.repeat(imgs.length)}
-    </div>
+    ${prop}
     `;
 
     let divSlides = [...imgs].map((e,i)=>
       `<div class="mySlides fade">
-        <div class="numbertext">${i + 1} / ${imgs.length}</div>
+        ${self.getAttribute('count') == 'no' ? '' : 
+        `<div class="numbertext">${i + 1} / ${imgs.length}</div>`
+        }
         <img src="${e.src}">
-        <div class="text">${e.getAttribute('caption') || ''}</div>
+        <div class="text">${e.alt || ''}</div>
       </div>`
     ).join('');
     divSlides += `
     <a class="prev">&#10094;</a>
     <a class="next">&#10095;</a>
     `;
-
     shadow.querySelector('.slideshow-container').innerHTML = divSlides;
 
     var slideIndex = 1;
@@ -148,17 +162,23 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     function showSlides(n) {
       var i;
       var slides = shadow.querySelectorAll(".mySlides");
-      var dots = shadow.querySelectorAll(".dot");
+      var dots = shadow.querySelector("#dots").children;
       if (n > slides.length) {slideIndex = 1}    
       if (n < 1) {slideIndex = slides.length}
       for (i = 0; i < slides.length; i++) {
           slides[i].style.display = "none";  
       }
       for (i = 0; i < dots.length; i++) {
-          dots[i].className = dots[i].className.replace(" active", "");
+          dots[i].className = dots[i].className.replace("active", "");
       }
       slides[slideIndex-1].style.display = "block";  
-      dots[slideIndex-1].className += " active";
+      dots[slideIndex-1].className += "active";
+    }
+
+    if(self.hasAttribute('auto')){
+      setInterval(()=>plusSlides(1), self.getAttribute('auto'))
     }
   }
+  //move functions to public
+  //auto(freq){}
 });

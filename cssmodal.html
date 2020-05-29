@@ -1,0 +1,16 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="module">
+  import './cssmodal.js';
+</script>
+
+<button onclick="document.getElementById('noBackground').show();return false;">no background</button>
+<css-modal id="noBackground" color="pink" center background="none">
+  <div>Modal Content</div>
+  <div slot="footer"><button data-modal="close">Close</button></div>
+</css-modal>
+
+<button onclick="document.getElementById('bgClose').show();return false;">close on background click</button>
+<css-modal id="bgClose" color="pink" center background="close">
+  <div>Modal Content</div>
+  <div slot="footer"><button data-modal="close">Close</button></div>
+</css-modal>
