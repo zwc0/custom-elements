@@ -178,6 +178,26 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     if(self.hasAttribute('auto')){
       setInterval(()=>plusSlides(1), self.getAttribute('auto'))
     }
+
+    (()=>{
+      let xStart = 0, xEnd = 0;
+      function onStart(e) {
+        xStart = e.touches[0].clientX;
+      }
+      function onMove(e) {
+        //e.preventDefault();
+        xEnd = e.touches[0].clientX;
+      }
+      function onEnd(e) {
+        if(!xEnd) return;
+        xStart > xEnd ? plusSlides(1) : plusSlides(-1);
+        xEnd = 0;
+      }
+      self.addEventListener('touchstart', onStart);
+      self.addEventListener('touchmove', onMove);
+      self.addEventListener('touchend', onEnd);
+    })()
+
   }
   //move functions to public
   //auto(freq){}
