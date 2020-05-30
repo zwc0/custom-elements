@@ -4,13 +4,13 @@
 </script>
 
 <button onclick="document.getElementById('noBackground').show();return false;">no background</button>
-<css-modal id="noBackground" color="pink" center background="none">
-  <div>Modal Content</div>
+<css-modal id="noBackground" color="pink" center background="none" drag>
+  <div>Modal Content draggable header</div>
   <div slot="footer"><button data-modal="close">Close</button></div>
 </css-modal>
 
 <button onclick="document.getElementById('bgClose').show();return false;">close on background click</button>
-<css-modal id="bgClose" color="pink" center background="close">
+<css-modal id="bgClose" color="pink" center background="close" drag=".modal-content">
   <div>Modal Content</div>
   <div slot="footer"><button data-modal="close">Close</button></div>
 </css-modal>

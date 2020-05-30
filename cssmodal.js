@@ -1,3 +1,4 @@
+import dragElement from './drag.js';
 window.customElements.define('css-modal', class extends HTMLElement {
   constructor(){
     super();
@@ -80,42 +81,12 @@ window.customElements.define('css-modal', class extends HTMLElement {
       if(e.target.dataset.modal == 'close'){self.close()}
     });
 
-    dragElement(shadow.querySelector('.modal-content'));
-    function dragElement(elmnt) {
-      var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-      if (shadow.querySelector(".modal-header")) {
-        elmnt.querySelector(".modal-header").onmousedown = dragMouseDown;
-      } else {
-        elmnt.onmousedown = dragMouseDown;
-      }
-
-      function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-      }
-
-      function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-      }
-
-      function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
-      }
-
-      self.close();
+    if(self.hasAttribute('drag')){
+      const handle = self.getAttribute('drag') ? shadow.querySelector(self.getAttribute('drag')) : shadow.querySelector('.modal-header');
+      dragElement(shadow.querySelector('.modal-content'), handle);
     }
+
+    self.close();
   }
   close() {this.style.display = 'none'}
   show() {this.style.display = ''}
