@@ -160,17 +160,12 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     });
     
     function showSlides(n) {
-      var i;
-      var slides = shadow.querySelectorAll(".mySlides");
-      var dots = shadow.querySelector("#dots").children;
-      if (n > slides.length) {slideIndex = 1}    
+      const slides = shadow.querySelectorAll(".mySlides"),
+      dots = shadow.querySelector("#dots").children;
+      if (n > slides.length) {slideIndex = 1}
       if (n < 1) {slideIndex = slides.length}
-      for (i = 0; i < slides.length; i++) {
-          slides[i].style.display = "none";  
-      }
-      for (i = 0; i < dots.length; i++) {
-          dots[i].className = dots[i].className.replace("active", "");
-      }
+      slides.forEach(e=>e.style.display = 'none');
+      [...dots].forEach(e=>e.classList.remove('active'));
       slides[slideIndex-1].style.display = "block";  
       dots[slideIndex-1].className += "active";
     }
@@ -180,16 +175,21 @@ window.customElements.define('css-slideshow', class extends HTMLElement {
     }
 
     (()=>{
-      let xStart = 0, xEnd = 0;
+      let xStart = 0, xEnd = 0, yStart = 0, yEnd = 0;
       function onStart(e) {
         xStart = e.touches[0].clientX;
+        yStart = e.touches[0].clientY;
       }
       function onMove(e) {
         //e.preventDefault();
         xEnd = e.touches[0].clientX;
+        yEnd = e.touches[0].clientY;
       }
       function onEnd(e) {
         if(!xEnd) return;
+        const xdiff = Math.abs(xStart - xEnd);
+        const ydiff = Math.abs(yStart - yEnd);
+        if(ydiff > xdiff) return;
         xStart > xEnd ? plusSlides(1) : plusSlides(-1);
         xEnd = 0;
       }
