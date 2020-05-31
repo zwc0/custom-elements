@@ -83,7 +83,7 @@ window.customElements.define('css-modal', class extends HTMLElement {
 
     if(self.hasAttribute('drag')){
       const handle = self.getAttribute('drag') ? shadow.querySelector(self.getAttribute('drag')) : shadow.querySelector('.modal-header');
-      dragElement(shadow.querySelector('.modal-content'), handle);
+      dragElement(shadow.querySelector('.modal-content'), handle, self.hasAttribute('drag-touch'));
     }
 
     self.close();
